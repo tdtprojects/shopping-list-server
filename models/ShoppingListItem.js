@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const shoppingListItemSchema = mongoose.Schema(
   {
+    listId: {
+      type: String,
+      required: true,
+    },
     text: {
       type: String,
       required: true,

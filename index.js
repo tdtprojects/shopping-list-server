@@ -4,8 +4,9 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import { shoppingList } from "./data/index.js";
-import shoppingListRoutes from "./routes/shoppingList.js";
+import { shoppingListItems, shoppingLists } from "./data/index.js";
+import shoppingListsRoutes from "./routes/shoppingLists.js";
+import ShoppingList from "./models/ShoppingList.js";
 import ShoppingListItem from "./models/ShoppingListItem.js";
 
 dotenv.config();
@@ -16,7 +17,7 @@ const PORT = process.env.PORT || 6001;
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
-app.use("/", shoppingListRoutes);
+app.use("/shopping-lists", shoppingListsRoutes);
 
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -27,6 +28,7 @@ mongoose
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
 
     // ADD DATA ONE TIME
-    // ShoppingListItem.insertMany(shoppingList);
+    // ShoppingList.insertMany(shoppingLists);
+    // ShoppingListItem.insertMany(shoppingListItems);
   })
   .catch((error) => console.log(`${error} did not connect`));
