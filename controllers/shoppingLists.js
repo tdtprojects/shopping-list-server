@@ -3,7 +3,19 @@ import ShoppingListItem from "../models/ShoppingListItem.js";
 
 export const getShoppingLists = async (req, res) => {
   try {
-    const shoppingLists = await ShoppingList.find();
+    let shoppingLists = [];
+
+    if (req.cookies.sll?.length) {
+      const shoppingListsIds = req.cookies.sll
+        .split(";=")
+        .map((item) => Buffer.from(item, "base64").toString("utf-8"));
+
+      shoppingLists = await ShoppingList.find({
+        _id: {
+          $in: shoppingListsIds,
+        },
+      });
+    }
 
     res.status(200).json(shoppingLists);
   } catch (error) {
@@ -15,6 +27,20 @@ export const getShoppingLists = async (req, res) => {
 export const getShoppingList = async (req, res) => {
   try {
     const { listId } = req.params;
+    const encodedListId = Buffer.from(listId).toString("base64");
+
+    if (!req.cookies.sll?.includes(encodedListId)) {
+      const shoppingListsEncodedIds = req.cookies.sll?.length
+        ? req.cookies.sll + `;=${encodedListId}`
+        : encodedListId;
+
+      res.cookie("sll", shoppingListsEncodedIds, {
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+        httpOnly: true, // HTTP only flag
+        secure: true, // Set to true if your application is using HTTPS
+      });
+    }
+
     const shoppingList = await ShoppingListItem.find({ listId });
 
     res.status(200).json(shoppingList);
@@ -100,7 +126,7 @@ export const deleteShoppingList = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-}
+};
 
 export const deleteShoppingListItem = async (req, res) => {
   try {
@@ -111,6 +137,29 @@ export const deleteShoppingListItem = async (req, res) => {
       res.status(404).json({ message: "Shopping list item not found." });
 
       return;
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const unpinShoppingList = async (req, res) => {
+  try {
+    const { listId } = req.params;
+
+    if (req.cookies.sll?.length) {
+      const encodedListId = Buffer.from(listId).toString("base64");
+      const stringToReplace =
+        req.cookies.sll.length > encodedListId.length ? `;=${encodedListId}` : encodedListId;
+      const updatedSll = req.cookies.sll.replace(stringToReplace, "");
+
+      res.cookie("sll", updatedSll, {
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+        httpOnly: true, // HTTP only flag
+        secure: true, // Set to true if your application is using HTTPS
+      });
     }
 
     res.status(204).json();

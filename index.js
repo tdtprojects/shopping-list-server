@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 import { shoppingListItems, shoppingLists } from "./data/index.js";
 import shoppingListsRoutes from "./routes/shoppingLists.js";
@@ -17,6 +18,7 @@ const PORT = process.env.PORT || 6001;
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
+app.use(cookieParser());
 app.use("/shopping-lists", shoppingListsRoutes);
 
 mongoose

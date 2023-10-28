@@ -9,6 +9,7 @@ import {
   updateShoppingListItem,
   deleteShoppingList,
   deleteShoppingListItem,
+  unpinShoppingList,
 } from "../controllers/shoppingLists.js";
 
 const router = express.Router();
@@ -28,5 +29,6 @@ router.patch("/:listId/:id", updateShoppingListItem);
 // /* DELETE */
 router.delete("/:listId", deleteShoppingList);
 router.delete("/:listId/:id", deleteShoppingListItem);
+router.delete("/unpin/:listId", unpinShoppingList);
 
 export default router;
