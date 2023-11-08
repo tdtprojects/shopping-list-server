@@ -40,8 +40,15 @@ export const getShoppingList = async (req, res) => {
         secure: true, // Set to true if your application is using HTTPS
       });
     }
-
-    const shoppingList = await ShoppingListItem.find({ listId });
+    const { title, id } = await ShoppingList.findById(listId);
+    const shoppingListItems = await ShoppingListItem.find({ listId });
+    const items = shoppingListItems.map(({ listId, checked, text, id }) => ({
+      listId,
+      checked,
+      text,
+      id,
+    }));
+    const shoppingList = { title, items, id };
 
     res.status(200).json(shoppingList);
   } catch (error) {
