@@ -5,10 +5,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import { shoppingListItems, shoppingLists } from "./data/index.js";
+import { shoppingLists } from "./data/index.js";
 import shoppingListsRoutes from "./routes/shoppingLists.js";
 import ShoppingList from "./models/ShoppingList.js";
-import ShoppingListItem from "./models/ShoppingListItem.js";
 
 dotenv.config();
 
@@ -16,7 +15,18 @@ const app = express();
 const PORT = process.env.PORT || 6001;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (process.env.ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+  allowedHeaders: 'Content-Type',
+}));
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use("/shopping-lists", shoppingListsRoutes);
@@ -31,6 +41,5 @@ mongoose
 
     // ADD DATA ONE TIME
     // ShoppingList.insertMany(shoppingLists);
-    // ShoppingListItem.insertMany(shoppingListItems);
   })
   .catch((error) => console.log(`${error} did not connect`));

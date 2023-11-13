@@ -4,11 +4,8 @@ import {
   getShoppingLists,
   getShoppingList,
   createShoppingList,
-  createShoppingListItem,
   updateShoppingList,
-  updateShoppingListItem,
   deleteShoppingList,
-  deleteShoppingListItem,
   unpinShoppingList,
 } from "../controllers/shoppingLists.js";
 
@@ -16,19 +13,16 @@ const router = express.Router();
 
 /* READ */
 router.get("/", getShoppingLists);
-router.get("/:listId", getShoppingList);
+router.get("/:id", getShoppingList);
 
 /* CREATE */
 router.post("/", createShoppingList);
-router.post("/:listId", createShoppingListItem);
 
 // /* UPDATE */
-router.patch("/:listId", updateShoppingList);
-router.patch("/:listId/:id", updateShoppingListItem);
+router.put("/:id", updateShoppingList);
 
 // /* DELETE */
-router.delete("/:listId", deleteShoppingList);
-router.delete("/:listId/:id", deleteShoppingListItem);
-router.delete("/unpin/:listId", unpinShoppingList);
+router.delete("/:id", deleteShoppingList);
+router.delete("/unpin/:id", unpinShoppingList);
 
 export default router;

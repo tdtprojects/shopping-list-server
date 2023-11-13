@@ -1,6 +1,6 @@
 import ShoppingList from "../models/ShoppingList.js";
-import ShoppingListItem from "../models/ShoppingListItem.js";
 
+/* READ */
 export const getShoppingLists = async (req, res) => {
   try {
     let shoppingLists = [];
@@ -23,16 +23,15 @@ export const getShoppingLists = async (req, res) => {
   }
 };
 
-/* READ */
 export const getShoppingList = async (req, res) => {
   try {
-    const { listId } = req.params;
-    const encodedListId = Buffer.from(listId).toString("base64");
+    const { id } = req.params;
+    const encodedId = Buffer.from(id).toString("base64");
 
-    if (!req.cookies.sll?.includes(encodedListId)) {
+    if (!req.cookies.sll?.includes(encodedId)) {
       const shoppingListsEncodedIds = req.cookies.sll?.length
-        ? req.cookies.sll + `;=${encodedListId}`
-        : encodedListId;
+        ? req.cookies.sll + `;=${encodedId}`
+        : encodedId;
 
       res.cookie("sll", shoppingListsEncodedIds, {
         maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
@@ -40,15 +39,8 @@ export const getShoppingList = async (req, res) => {
         secure: true, // Set to true if your application is using HTTPS
       });
     }
-    const { title, id } = await ShoppingList.findById(listId);
-    const shoppingListItems = await ShoppingListItem.find({ listId });
-    const items = shoppingListItems.map(({ listId, checked, text, id }) => ({
-      listId,
-      checked,
-      text,
-      id,
-    }));
-    const shoppingList = { title, items, id };
+
+    const shoppingList = await ShoppingList.findById(id);
 
     res.status(200).json(shoppingList);
   } catch (error) {
@@ -70,28 +62,15 @@ export const createShoppingList = async (req, res) => {
   }
 };
 
-export const createShoppingListItem = async (req, res) => {
-  try {
-    const { listId } = req.params;
-    const { text, checked } = req.body;
-    const newShoppingListItem = new ShoppingListItem({ text, checked, listId });
-
-    await newShoppingListItem.save();
-
-    res.status(201).json(newShoppingListItem);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-
 /* UPDATE */
 export const updateShoppingList = async (req, res) => {
   try {
-    const { listId } = req.params;
-    const { title } = req.body;
+    const { id } = req.params;
+    const { title, items } = req.body;
+    const updatedItems = items.map(({ id, ...rest }) => ({...rest}));
     const updatedShoppingList = await ShoppingList.findByIdAndUpdate(
-      listId,
-      { title },
+      id,
+      { title, items: updatedItems },
       { new: true }
     );
 
@@ -101,27 +80,11 @@ export const updateShoppingList = async (req, res) => {
   }
 };
 
-export const updateShoppingListItem = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { text, checked } = req.body;
-    const updatedShoppingListItem = await ShoppingListItem.findByIdAndUpdate(
-      id,
-      { text, checked },
-      { new: true }
-    );
-
-    res.status(200).json(updatedShoppingListItem);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-
 /* DELETE */
 export const deleteShoppingList = async (req, res) => {
   try {
-    const { listId } = req.params;
-    const shoppingList = await ShoppingList.findByIdAndDelete(listId);
+    const { id } = req.params;
+    const shoppingList = await ShoppingList.findByIdAndDelete(id);
 
     if (!shoppingList) {
       res.status(404).json({ message: "Shopping list not found." });
@@ -135,31 +98,14 @@ export const deleteShoppingList = async (req, res) => {
   }
 };
 
-export const deleteShoppingListItem = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const shoppingListItem = await ShoppingListItem.findByIdAndDelete(id);
-
-    if (!shoppingListItem) {
-      res.status(404).json({ message: "Shopping list item not found." });
-
-      return;
-    }
-
-    res.status(204).json();
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-
 export const unpinShoppingList = async (req, res) => {
   try {
-    const { listId } = req.params;
+    const { id } = req.params;
 
     if (req.cookies.sll?.length) {
-      const encodedListId = Buffer.from(listId).toString("base64");
+      const encodedId = Buffer.from(id).toString("base64");
       const stringToReplace =
-        req.cookies.sll.length > encodedListId.length ? `;=${encodedListId}` : encodedListId;
+        req.cookies.sll.length > encodedId.length ? `;=${encodedId}` : encodedId;
       const updatedSll = req.cookies.sll.replace(stringToReplace, "");
 
       res.cookie("sll", updatedSll, {

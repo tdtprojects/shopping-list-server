@@ -14,42 +14,43 @@ export const shoppingLists = [
   {
     _id: listIds[0],
     title: "My first list",
+    items: [
+      {
+        _id: itemIds[0],
+        checked: false,
+        text: "Buy a milk",
+        order: 1,
+      },
+      {
+        _id: itemIds[1],
+        checked: false,
+        text: "Buy a coffee",
+        order: 2,
+      },
+      {
+        _id: itemIds[2],
+        checked: false,
+        text: "Buy an apple",
+        order: 3,
+      },
+    ],
   },
   {
     _id: listIds[1],
     title: "My second list",
-  },
-];
-
-export const shoppingListItems = [
-  {
-    _id: itemIds[0],
-    listId: listIds[0],
-    checked: false,
-    text: "Buy a milk",
-  },
-  {
-    _id: itemIds[1],
-    listId: listIds[0],
-    checked: false,
-    text: "Buy a coffee",
-  },
-  {
-    _id: itemIds[2],
-    listId: listIds[0],
-    checked: false,
-    text: "Buy an apple",
-  },
-  {
-    _id: itemIds[3],
-    listId: listIds[1],
-    checked: false,
-    text: "Buy rice",
-  },
-  {
-    _id: itemIds[4],
-    listId: listIds[1],
-    checked: false,
-    text: "Buy cake",
+    items: [
+      {
+        _id: itemIds[3],
+        checked: false,
+        text: "Buy rice",
+        order: 1,
+      },
+      {
+        _id: itemIds[4],
+        checked: false,
+        text: "Buy cake",
+        order: 2
+      },
+    ],
   },
 ];
