@@ -43,7 +43,11 @@ export const getShoppingList = async (req, res) => {
 
     const shoppingList = await ShoppingList.findById(id);
 
-    res.status(200).json(shoppingList);
+    if (shoppingList) {
+      res.status(200).json(shoppingList);
+    } else {
+      res.status(404).json({ message: "Shopping list not found." });
+    }
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -75,7 +79,11 @@ export const updateShoppingList = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json(updatedShoppingList);
+    if (updatedShoppingList) {
+      res.status(200).json(updatedShoppingList);
+    } else {
+      res.status(404).json({ message: "Shopping list not found." });
+    }
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
