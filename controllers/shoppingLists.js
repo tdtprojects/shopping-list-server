@@ -8,7 +8,8 @@ export const getShoppingLists = async (req, res) => {
     if (req.cookies.sll?.length) {
       const shoppingListsIds = req.cookies.sll
         .split(";=")
-        .map((item) => Buffer.from(item, "base64").toString("utf-8"));
+        .map((item) => Buffer.from(item, "base64").toString("utf-8"))
+        .filter((item) => item.length > 0);
 
       shoppingLists = await ShoppingList.find({
         _id: {
@@ -38,6 +39,7 @@ export const getShoppingList = async (req, res) => {
         httpOnly: true, // HTTP only flag
         secure: true, // Set to true if your application is using HTTPS
         sameSite: "None", // Allow cross-site requests
+        partitioned: true,
       });
     }
 
@@ -72,7 +74,7 @@ export const updateShoppingList = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, items } = req.body;
-    const updatedItems = items.map(({ id, ...rest }) => ({...rest}));
+    const updatedItems = items.map(({ id, ...rest }) => ({ ...rest }));
     const updatedShoppingList = await ShoppingList.findByIdAndUpdate(
       id,
       { title, items: updatedItems },
@@ -113,8 +115,14 @@ export const unpinShoppingList = async (req, res) => {
 
     if (req.cookies.sll?.length) {
       const encodedId = Buffer.from(id).toString("base64");
-      const stringToReplace =
-        req.cookies.sll.length > encodedId.length ? `;=${encodedId}` : encodedId;
+      let stringToReplace = "";
+
+      if (req.cookies.sll.length > encodedId.length) {
+        stringToReplace = req.cookies.sll.startsWith(encodedId) ? encodedId : `;=${encodedId}`;
+      } else {
+        stringToReplace = encodedId;
+      }
+
       const updatedSll = req.cookies.sll.replace(stringToReplace, "");
 
       res.cookie("sll", updatedSll, {
@@ -122,6 +130,7 @@ export const unpinShoppingList = async (req, res) => {
         httpOnly: true, // HTTP only flag
         secure: true, // Set to true if your application is using HTTPS
         sameSite: "None", // Allow cross-site requests
+        partitioned: true,
       });
     }
 
