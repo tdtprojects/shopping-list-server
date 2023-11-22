@@ -1,4 +1,5 @@
 import ShoppingList from "../models/ShoppingList.js";
+import { getCookieConfig } from "../utils/getCookieConfig.js";
 
 /* READ */
 export const getShoppingLists = async (req, res) => {
@@ -34,13 +35,7 @@ export const getShoppingList = async (req, res) => {
         ? req.cookies.sll + `;=${encodedId}`
         : encodedId;
 
-      res.cookie("sll", shoppingListsEncodedIds, {
-        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-        httpOnly: true, // HTTP only flag
-        secure: true, // Set to true if your application is using HTTPS
-        sameSite: "None", // Allow cross-site requests
-        partitioned: true,
-      });
+      res.cookie("sll", shoppingListsEncodedIds, getCookieConfig());
     }
 
     const shoppingList = await ShoppingList.findById(id);
@@ -125,13 +120,7 @@ export const unpinShoppingList = async (req, res) => {
 
       const updatedSll = req.cookies.sll.replace(stringToReplace, "");
 
-      res.cookie("sll", updatedSll, {
-        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-        httpOnly: true, // HTTP only flag
-        secure: true, // Set to true if your application is using HTTPS
-        sameSite: "None", // Allow cross-site requests
-        partitioned: true,
-      });
+      res.cookie("sll", updatedSll, getCookieConfig());
     }
 
     res.status(204).json();
