@@ -65,18 +65,34 @@ export const createShoppingList = async (req, res) => {
 };
 
 /* UPDATE */
-export const updateShoppingList = async (req, res) => {
+export const updateShoppingListItems = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, items } = req.body;
+    const { items } = req.body;
     const updatedItems = items.map(({ id, ...rest }) => ({ ...rest }));
     const updatedShoppingList = await ShoppingList.findByIdAndUpdate(
       id,
-      { title, items: updatedItems },
+      { items: updatedItems },
       { new: true }
     );
 
     if (updatedShoppingList) {
+      res.status(200).json(updatedShoppingList);
+    } else {
+      res.status(404).json({ message: "Shopping list not found." });
+    }
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const updateShoppingListTitle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    const updatedShoppingList = await ShoppingList.findByIdAndUpdate(id, { title }, { new: true });
+
+    if (updatedShoppingList) {    
       res.status(200).json(updatedShoppingList);
     } else {
       res.status(404).json({ message: "Shopping list not found." });

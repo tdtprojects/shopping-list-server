@@ -4,9 +4,10 @@ import {
   getShoppingLists,
   getShoppingList,
   createShoppingList,
-  updateShoppingList,
+  updateShoppingListItems,
   deleteShoppingList,
   unpinShoppingList,
+  updateShoppingListTitle,
 } from "../controllers/shoppingLists.js";
 
 const router = express.Router();
@@ -19,7 +20,8 @@ router.get("/:id", getShoppingList);
 router.post("/", createShoppingList);
 
 // /* UPDATE */
-router.put("/:id", updateShoppingList);
+router.put("/:id", updateShoppingListItems);
+router.put("/:id/title", updateShoppingListTitle);
 
 // /* DELETE */
 router.delete("/:id", deleteShoppingList);
