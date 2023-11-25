@@ -92,7 +92,7 @@ export const updateShoppingListTitle = async (req, res) => {
     const { title } = req.body;
     const updatedShoppingList = await ShoppingList.findByIdAndUpdate(id, { title }, { new: true });
 
-    if (updatedShoppingList) {    
+    if (updatedShoppingList) {
       res.status(200).json(updatedShoppingList);
     } else {
       res.status(404).json({ message: "Shopping list not found." });
