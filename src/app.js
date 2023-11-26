@@ -14,16 +14,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 6001;
 
+app.use(express.static("dist"));
 app.use(express.json());
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+  console.log("Request Origin:", origin);
+  next();
+});
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (process.env.ALLOWED_ORIGINS.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: ["http://localhost:8080", "https://shopping-list-web-app.pages.dev"],
     credentials: true,
     methods: "GET, POST, OPTIONS, PUT, PATCH, DELETE",
     allowedHeaders: "Content-Type",
@@ -31,7 +31,7 @@ app.use(
 );
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use("/shopping-lists", shoppingListsRoutes);
+app.use("/api/shopping-lists", shoppingListsRoutes);
 
 mongoose
   .connect(process.env.MONGO_URL, {
