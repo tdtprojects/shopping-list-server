@@ -4,9 +4,11 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { dirname } from "path";
 
-import { shoppingLists } from "./data/index.js";
 import shoppingListsRoutes from "./routes/shoppingLists.js";
+import { shoppingLists } from "./data/index.js";
 import ShoppingList from "./models/ShoppingList.js";
 
 dotenv.config();
@@ -16,11 +18,6 @@ const PORT = process.env.PORT || 6001;
 
 app.use(express.static("dist"));
 app.use(express.json());
-app.use((req, res, next) => {
-  const origin = req.get("origin");
-  console.log("Request Origin:", origin);
-  next();
-});
 app.use(
   cors({
     origin: ["http://localhost:8080", "https://shopping-list-web-app.pages.dev"],
@@ -32,6 +29,9 @@ app.use(
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use("/api/shopping-lists", shoppingListsRoutes);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+});
 
 mongoose
   .connect(process.env.MONGO_URL, {
