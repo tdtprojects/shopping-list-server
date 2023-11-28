@@ -7,6 +7,6 @@ export const getCookieConfig = () => {
     secure: true, // Set to true if your application is using HTTPS
     sameSite: "None", // Allow cross-site requests
     partitioned: true,
-    domain: isLocalEnvironment ? "localhost" : ".up.railway.app",
+    domain: isLocalEnvironment ? "localhost" : ".pages.dev",
   };
 };
