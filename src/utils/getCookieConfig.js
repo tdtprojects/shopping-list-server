@@ -5,6 +5,6 @@ export const getCookieConfig = () => {
     secure: true, // Set to true if your application is using HTTPS
     sameSite: "None", // Allow cross-site requests
     partitioned: true,
-    domain: process.env.COOKIE_DOMAIN,
+    // domain: process.env.COOKIE_DOMAIN,
   };
 };
