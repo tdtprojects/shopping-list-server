@@ -5,7 +5,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { dirname } from "path";
 
 import shoppingListsRoutes from "./routes/shoppingLists.js";
 import { shoppingLists } from "./data/index.js";
@@ -16,7 +15,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 6001;
 
-// app.use(express.static("dist"));
+app.use(express.static("dist"));
 app.use(express.json());
 app.use(
   cors({
@@ -34,10 +33,10 @@ app.use(
 );
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use("/shopping-lists", shoppingListsRoutes);
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
-// });
+app.use("/api/shopping-lists", shoppingListsRoutes);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+});
 
 mongoose
   .connect(process.env.MONGO_URL, {
