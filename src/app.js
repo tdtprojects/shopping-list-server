@@ -9,6 +9,7 @@ import path from "path";
 import shoppingListsRoutes from "./routes/shoppingLists.js";
 import { shoppingLists } from "./data/index.js";
 import ShoppingList from "./models/ShoppingList.js";
+import "./scheduler.js";
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use("/api/shopping-lists", shoppingListsRoutes);
 app.get("*", (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+  res.sendFile(path.join(process.cwd(), "dist", "index.html"));
 });
 
 mongoose
