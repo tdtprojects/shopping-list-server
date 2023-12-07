@@ -1,5 +1,7 @@
 import schedule from "node-schedule";
 
+import ShoppingList from "./models/ShoppingList.js";
+
 schedule.scheduleJob("0 0 * * *", async () => {
   // const threeMonthsAgo = new Date();
   // threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
