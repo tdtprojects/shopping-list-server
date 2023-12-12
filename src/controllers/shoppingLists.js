@@ -7,16 +7,24 @@ export const getShoppingLists = async (req, res) => {
     let shoppingLists = [];
 
     if (req.cookies.sll?.length) {
-      const shoppingListsIds = req.cookies.sll
+      const shoppingListsCookieIds = req.cookies.sll
         .split(";=")
         .map((item) => Buffer.from(item, "base64").toString("utf-8"))
         .filter((item) => item.length > 0);
 
       shoppingLists = await ShoppingList.find({
         _id: {
-          $in: shoppingListsIds,
+          $in: shoppingListsCookieIds,
         },
       });
+
+      const updatedCookieSll = shoppingLists
+        .map(({ id }) => Buffer.from(id).toString("base64"))
+        .join(";=");
+
+      if (updatedCookieSll.length > 0) {
+        res.cookie("sll", updatedCookieSll, getCookieConfig());
+      }
     }
 
     res.status(200).json(shoppingLists);
