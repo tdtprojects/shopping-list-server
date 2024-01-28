@@ -37,18 +37,17 @@ export const getShoppingList = async (req, res) => {
   try {
     const { id } = req.params;
     const encodedId = Buffer.from(id).toString("base64");
-
-    if (!req.cookies.sll?.includes(encodedId)) {
-      const shoppingListsEncodedIds = req.cookies.sll?.length
-        ? req.cookies.sll + `;=${encodedId}`
-        : encodedId;
-
-      res.cookie("sll", shoppingListsEncodedIds, getCookieConfig());
-    }
-
     const shoppingList = await ShoppingList.findById(id);
 
     if (shoppingList) {
+      if (!req.cookies.sll?.includes(encodedId)) {
+        const shoppingListsEncodedIds = req.cookies.sll?.length
+          ? req.cookies.sll + `;=${encodedId}`
+          : encodedId;
+
+        res.cookie("sll", shoppingListsEncodedIds, getCookieConfig());
+      }
+
       res.status(200).json(shoppingList);
     } else {
       res.status(404).json({ message: "Shopping list not found." });
